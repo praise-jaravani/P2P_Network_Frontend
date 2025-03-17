@@ -6,7 +6,7 @@ import DownloadProgress from './download-progress';
 import { DownloadProgress as DownloadProgressType } from '../../types';
 
 export default function DownloadList() {
-  const { systemStatus, isLoading } = useAppContext();
+  const { systemStatus, isLoading, downloadToClient } = useAppContext();
   
   const currentDownloads = systemStatus?.downloads?.current_downloads || [];
   const completedDownloads = systemStatus?.downloads?.completed_downloads || [];
@@ -100,16 +100,17 @@ export default function DownloadList() {
                   </div>
                 </div>
                 
-                {/* Optional action buttons */}
+                {/* Action buttons */}
                 <div className="mt-3 flex justify-end space-x-2">
                   <button
+                    onClick={() => downloadToClient(download.filename)}
                     className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center"
                   >
                     <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M11.2798 23C11.0981 23 10.9163 22.9396 10.7723 22.7982L3.38001 15.532C3.09197 15.2492 3.09197 14.7868 3.38001 14.504C3.66806 14.2212 4.14063 14.2212 4.42868 14.504L11.2798 21.238L19.5712 13.079C19.8593 12.7962 20.3319 12.7962 20.6199 13.079C20.908 13.3618 20.908 13.8242 20.6199 14.107L11.7873 22.7982C11.6433 22.9396 11.4615 23 11.2798 23Z" fill="currentColor"/>
-                      <path d="M11.28 23.0002C10.868 23.0002 10.5249 22.6636 10.5249 22.2588V1.73727C10.5249 1.33247 10.868 0.995911 11.28 0.995911C11.692 0.995911 12.0351 1.33247 12.0351 1.73727V22.2588C12.0351 22.6636 11.692 23.0002 11.28 23.0002Z" fill="currentColor"/>
+                      <path d="M12 4V16M12 16L8 12M12 16L16 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M3 19H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                     </svg>
-                    Open
+                    Download to Browser
                   </button>
                   <button
                     className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center"

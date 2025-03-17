@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { SystemStatus, File, ConnectionSettings } from '../types';
-import { getSystemStatus, getAvailableFiles, downloadFile, configureTracker } from '../lib/api';
+import { getSystemStatus, getAvailableFiles, downloadFile, configureTracker, downloadFileToClient } from '../lib/api';
 import { getWebSocketClient } from '../lib/websocket';
 import { debounce } from 'lodash';
 
@@ -31,6 +31,7 @@ interface AppContextType {
   refreshFiles: () => Promise<void>;
   startDownload: (filename: string) => Promise<boolean>;
   setActiveTab: (tab: string) => void;
+  downloadToClient: (filename: string) => Promise<boolean>;
 }
 
 // Create context with default values
@@ -47,6 +48,7 @@ const AppContext = createContext<AppContextType>({
   refreshFiles: async () => {},
   startDownload: async () => false,
   setActiveTab: () => {},
+  downloadToClient: async () => false,
 });
 
 // Custom hook to use the app context
@@ -224,6 +226,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return await downloadFile(filename);
   }, []);
 
+  // Download file to client browser with useCallback
+  const downloadToClient = useCallback(async (filename: string): Promise<boolean> => {
+    return await downloadFileToClient(filename);
+  }, []);
+
   // Context value
   const contextValue: AppContextType = {
     isConnected,
@@ -238,6 +245,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     refreshFiles,
     startDownload,
     setActiveTab,
+    downloadToClient,
   };
 
   return (

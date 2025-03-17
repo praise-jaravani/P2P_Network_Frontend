@@ -136,3 +136,43 @@ export async function configureTracker(trackerIp: string, trackerPort: string, s
     return false;
   }
 }
+
+// Download a file directly to the browser
+export async function downloadFileToClient(filename: string): Promise<boolean> {
+  try {
+    console.log("Starting browser download for file:", filename);
+    // Use fetch to get the file as a blob
+    const response = await fetch(`${API_BASE}/files/${filename}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error downloading file: ${response.statusText}`);
+    }
+    
+    // Get the file as a blob
+    const blob = await response.blob();
+    
+    // Create a URL for the blob
+    const url = window.URL.createObjectURL(blob);
+    
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    
+    // Append to the document
+    document.body.appendChild(link);
+    
+    // Trigger the download
+    link.click();
+    
+    // Clean up
+    link.parentNode?.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+    console.log("Browser download initiated for:", filename);
+    return true;
+  } catch (error) {
+    console.error(`Failed to download file ${filename} to browser:`, error);
+    return false;
+  }
+}
