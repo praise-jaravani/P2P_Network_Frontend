@@ -20,7 +20,8 @@ export class WebSocketClient {
       
       // Use localhost:8000 explicitly rather than relying on window.location.host
       // This ensures we connect to the backend API server, not the frontend
-      this.baseUrl = `${protocol}//localhost:8000/ws`;
+      //this.baseUrl = `${protocol}//localhost:8000/ws`;
+      this.baseUrl = `wss://p2p-network-backend.onrender.com/ws`;
       console.log("WebSocket will connect to:", this.baseUrl);
     } else {
       // Placeholder during server-side rendering

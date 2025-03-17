@@ -1,7 +1,8 @@
 import { File, SystemStatus } from "../types/";
 
 // API base URL - this should match your backend URL
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000/api';
+//const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000/api';
+const API_BASE = 'https://p2p-network-backend.onrender.com/api';
 console.log("API connecting to:", API_BASE);
 
 // Get available files
