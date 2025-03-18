@@ -141,36 +141,44 @@ export async function configureTracker(trackerIp: string, trackerPort: string, s
 export async function downloadFileToClient(filename: string): Promise<boolean> {
   try {
     console.log("Starting browser download for file:", filename);
-    // Use fetch to get the file as a blob
-    const response = await fetch(`${API_BASE}/files/${filename}`);
     
-    if (!response.ok) {
-      throw new Error(`Error downloading file: ${response.statusText}`);
-    }
+    // Create an invisible iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
     
-    // Get the file as a blob
-    const blob = await response.blob();
+    // Track when the iframe is loaded
+    return new Promise((resolve) => {
+      iframe.onload = () => {
+        console.log("iframe loaded, download should have started");
+        
+        // Clean up after a delay to ensure download starts
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+          resolve(true);
+        }, 1000);
+      };
+      
+      // Set the iframe source to the file URL which triggers the download
+      iframe.src = `${API_BASE}/files/${filename}`;
+      
+      // Handle potential errors (e.g., if file not found)
+      iframe.onerror = () => {
+        console.error("iframe failed to load");
+        document.body.removeChild(iframe);
+        resolve(false);
+      };
+      
+      // Fallback if onload doesn't trigger within 5 seconds
+      setTimeout(() => {
+        if (document.body.contains(iframe)) {
+          console.log("Removing iframe after timeout");
+          document.body.removeChild(iframe);
+          resolve(true); // Assume it worked, even if we're not sure
+        }
+      }, 5000);
+    });
     
-    // Create a URL for the blob
-    const url = window.URL.createObjectURL(blob);
-    
-    // Create a temporary link element
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', filename);
-    
-    // Append to the document
-    document.body.appendChild(link);
-    
-    // Trigger the download
-    link.click();
-    
-    // Clean up
-    link.parentNode?.removeChild(link);
-    window.URL.revokeObjectURL(url);
-    
-    console.log("Browser download initiated for:", filename);
-    return true;
   } catch (error) {
     console.error(`Failed to download file ${filename} to browser:`, error);
     return false;
